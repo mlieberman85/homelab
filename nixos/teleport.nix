@@ -10,7 +10,7 @@
         data_dir = "/var/lib/teleport";
         log = {
           output = "stderr";
-          severity = "INFO";
+          severity = "DEBUG";
           format = {
             output = "text";
           };
@@ -56,6 +56,7 @@
       };
     };
     systemd.services.manage-teleport-users = {
+      enable = true;
       path = [pkgs.bash pkgs.teleport pkgs.nixos-rebuild pkgs.gawk];
       script = ''
         /home/mlieberman/Projects/homelab/scripts/get-teleport-users.sh > /tmp/users.json;

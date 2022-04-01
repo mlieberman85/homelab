@@ -3,7 +3,7 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs,... }:
-rec {
+{
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -11,6 +11,7 @@ rec {
       ./vscode.nix
       ./teleport.nix
       ./tailscale.nix 
+      ./code-server.nix
       ./users.nix
     ];
   nixpkgs.config.allowUnfree = true;
@@ -62,7 +63,7 @@ rec {
     home = "/home/mlieberman";
     description = "Mike Lieberman";
     extraGroups = [ "wheel" "networkmanager" ];
-    shell = pkgs.fish;
+    shell = pkgs.bash;
   };
 
   systemd.targets.sleep.enable = false;
