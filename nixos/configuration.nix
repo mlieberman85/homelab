@@ -35,6 +35,7 @@
      wget
      firefox
      home-manager
+     pinentry-curses
    ];
   
   # Enable the OpenSSH daemon.
@@ -62,7 +63,7 @@
     isNormalUser = true;
     home = "/home/mlieberman";
     description = "Mike Lieberman";
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "wheel" "networkmanager" "tss" ];
     shell = pkgs.bash;
   };
 
@@ -72,6 +73,17 @@
   systemd.targets.hybrid-sleep.enable = false;
   services.nginx.enable = true;
   security.acme.acceptTerms = true;
-  security.acme.defaults.email = "mlieberman85@gmail.com";
- }
+  security.acme.defaults.email = "mlieberman85@gmail.com";  
+  security.tpm2 = {
+    enable = true;
+    abrmd.enable = true;
+  };
+
+  services.pcscd.enable = true;
+  programs.gnupg.agent = {
+   enable = true;
+   pinentryFlavor = "curses";
+   enableSSHSupport = true;
+ };
+}
 
