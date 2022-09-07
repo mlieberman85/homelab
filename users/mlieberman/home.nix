@@ -23,13 +23,22 @@
 { config, lib, pkgs, ... }:
 #Based on https://github.com/mitchellh/nixos-config/blob/main/users/mitchellh/home-manager.nix
  {
+   
+  imports = [
+    "${fetchTarball "https://github.com/msteen/nixos-vscode-server/tarball/master"}/modules/vscode-server/home.nix"
+  ];
+
+  services.vscode-server.enable = true;
+  #services.neo4j.enable = true;
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
 
   home.packages = with pkgs; [
+    awscli2
     bat
     git
+    gh
     nixpkgs-fmt
     unzip
   ];
@@ -52,15 +61,14 @@
   #---------------------------------------------------------------------
 
   #programs.gpg.enable = true;
+  programs.go.enable = true;
 
   programs.bash = {
     enable = true;
     shellOptions = [];
     historyControl = [ "ignoredups" "ignorespace" ];
-    #initExtra = builtins.readFile ./bashrc;  
-    initExtra = ''
-      fish
-    '';
+    #initExtra = builtins.readFile ./bashrc;
+    initExtra = builtins.readFile ./bashrc;  
 
     shellAliases = {
       rebuild="sudo nixos-rebuild switch -I nixos-config=$HOME/Projects/homelab/nixos/configuration.nix";
@@ -96,6 +104,7 @@
       github.user = "mlieberman85";
       push.default = "tracking";
       init.defaultBranch = "main";
+      user.signingkey = "3617791EA6BD72E2EA0F536BD6C7E6BABADB1AFF";
     };
   };
 
@@ -161,4 +170,6 @@
     package = pkgs.vanilla-dmz;
     size = 128;
   };
+
+  xsession.enable = true;
 }

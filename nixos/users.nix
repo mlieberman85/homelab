@@ -60,7 +60,11 @@ in
     services.teleport.settings = {
       app_service = {
         enabled = "yes";
-        apps = mkTeleportApps userList;
+        apps = mkTeleportApps userList ++ [
+          { labels = {user = "mlieberman";}; name = "code-server-mlieberman"; uri = "http://localhost:8080"; }
+          { labels = {user = "tmiller";}; name = "code-server-tmiller"; uri = "http://localhost:8081"; }
+          #{ labels = {user = "ppatel";}; name = "code-server-ppatel"; uri = "http://localhost:8082"; }
+        ];
       };
     };
   };

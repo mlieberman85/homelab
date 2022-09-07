@@ -14,6 +14,25 @@
       ./code-server.nix
       ./users.nix
     ];
+
+  nixpkgs.overlays = with pkgs; [(final: super: {
+    teleport = import ./overlays/teleport {
+      inherit lib;
+      inherit buildGoModule;
+      inherit rustPlatform;
+      inherit fetchFromGitHub;
+      inherit makeWrapper;
+      inherit symlinkJoin;
+      inherit CoreFoundation;
+      inherit openssl;
+      inherit pkg-config;
+      inherit protobuf;
+      inherit Security;
+      inherit stdenv;
+      inherit xdg-utils;
+      inherit nixosTests;
+    };
+  })];
   nixpkgs.config.allowUnfree = true;
 
   # Use the systemd-boot EFI boot loader.
@@ -39,7 +58,10 @@
    ];
   
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    extraConfig = ''usePAM yes'';
+  };
   system.stateVersion = "21.11"; # Did you read the comment?
     # make the tailscale command usable to users
 
@@ -55,7 +77,7 @@
     allowedUDPPorts = [ config.services.tailscale.port ];
 
     # allow you to SSH in over the public internet
-    allowedTCPPorts = [ 22 80 443 25565 3022 3023 3024 3025 3080 3026 3027 3028 3036 8080 ];
+    allowedTCPPorts = [ 22 80 443 25565 3022 3023 3024 3025 3080 3026 3027 3028 3036 8080 7474 7473 7687 ];
   };
 
   # Most users should be coming through teleport but if that is failing, need a local user to fix stuff.
@@ -63,8 +85,22 @@
     isNormalUser = true;
     home = "/home/mlieberman";
     description = "Mike Lieberman";
-    extraGroups = [ "wheel" "networkmanager" "tss" ];
+    extraGroups = [ "wheel" "networkmanager" "tss" "docker" ];
     shell = pkgs.bash;
+  };
+
+  users.users.tmiller = {
+    isNormalUser = true;
+    home = "/home/tmiller";
+    description = "Tim Miller";
+    extraGroups = [ "wheel" "networkmanager" "tss" "docker" ];
+  };
+
+    users.users.ppatel = {
+    isNormalUser = true;
+    home = "/home/ppatel";
+    description = "Parth Patel";
+    extraGroups = [ "wheel" "networkmanager" "tss" "docker" ];
   };
 
   systemd.targets.sleep.enable = false;
@@ -84,6 +120,24 @@
    enable = true;
    pinentryFlavor = "curses";
    enableSSHSupport = true;
+ };
+
+ virtualisation = {
+   docker = {
+     enable = true;
+   };
+ };
+
+ programs.bash.shellInit = ''
+    export XDG_RUNTIME_DIR=/run/user/$UID
+ '';
+
+ services.neo4j  = {
+  enable = true;
+  bolt.tlsLevel = "DISABLED";
+  https.enable =  false;
+  allowUpgrade = true;
+  defaultListenAddress = "0.0.0.0";
  };
 }
 

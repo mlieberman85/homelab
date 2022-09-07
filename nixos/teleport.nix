@@ -44,9 +44,9 @@
       proxy_service = {
         enabled = "yes";
         https_keypairs = [ ];
-        acme = { 
-            enabled = "yes";
-            email = "mlieberman85@gmail.com";
+        acme = {
+          enabled = "yes";
+          email = "mlieberman85@gmail.com";
         };
         proxy_protocol = "on";
         web_listen_addr = "0.0.0.0:443";
@@ -54,10 +54,17 @@
         public_addr = "dev.bonesquad.rodeo:443";
         #ssh_public_addr = "dev.bonesquad.rodeo:3023";
       };
+      app_service.apps = [{
+        labels = {
+          group = "guac";
+        };
+        name = "guac-neo4j";
+        uri = "http://localhost:7474";
+      }];
     };
     systemd.services.manage-teleport-users = {
-      enable = true;
-      path = [pkgs.bash pkgs.teleport pkgs.nixos-rebuild pkgs.gawk];
+      enable = false;
+      path = [ pkgs.bash pkgs.teleport pkgs.nixos-rebuild pkgs.gawk ];
       script = ''
         /home/mlieberman/Projects/homelab/scripts/get-teleport-users.sh > /tmp/users.json;
         nixos-rebuild switch -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos -I nixos-config=/home/mlieberman/Projects/homelab/nixos/configuration.nix

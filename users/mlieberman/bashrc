@@ -1,0 +1,2 @@
+complete -C aws_completer aws
+export GITSIGN_OIDC_REDIRECT_URL="http://localhost:33890/auth/callback"
